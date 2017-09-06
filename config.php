@@ -5,6 +5,10 @@ class SugarCRMPluginConfig extends PluginConfig {
     // return a list of all the configurable options
     function getOptions() {
         return array(
+            'conf' => new SectionBreakField(array(
+                'label' => 'SugarCRM API',
+                'hint' => 'Information needed to access the SugarCRM API',
+            )),
             'url' => new TextboxField(array(
                 'label' => 'SugarCRM URL',
                 'hint' => 'SugarCRM rest api url',
@@ -22,6 +26,24 @@ class SugarCRMPluginConfig extends PluginConfig {
             'confirm' => new PasswordField(array(
                 'label' => 'confirm',
                 'configuration' => array('size'=>20),
+            )),
+            'sync' => new SectionBreakField(array(
+                'label' => 'Synchronization Modes',
+                'hint' => 'Synchronization modes for Accounts and Contacts can be enabled independently',
+            )),
+            'sync-contacts' => new BooleanField(array(
+                'label' => 'Syncronize Contacts',
+                'default' => true,
+                'configuration' => array(
+                    'desc' => 'Enable creation of new Users into SugarCRM Contacts',
+                ),
+            )),
+            'auth-accounts' => new BooleanField(array(
+                'label' => 'Syncronize Accounts',
+                'default' => true,
+                'configuration' => array(
+                    'desc' => 'Enable creation of new Organizations into SugarCRM Accounts',
+                ),
             )),
         );
     }
