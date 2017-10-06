@@ -51,6 +51,12 @@ class SugarRestAPI
          return $response;
      }
 
+     // log output to a file (hard coded at this time)
+     function LogToFile($Message) {
+         error_log(date("Y-m-d H:i:s")." - ",3,"./sugarcrm.txt");
+         error_log($Message,3,"./sugarcrm.txt");
+     }
+
      // our public functions
      // print out our private state variables.  use for debugging
      public function PrintPrivateState()
@@ -258,6 +264,76 @@ class SugarRestAPI
           // do the request
           if($this->debug) print_r($args);
           $result = $this->request('get_entry_list',$args);
+
+          // return the results
+          if($this->debug) print_r($result);
+          return $result;
+      }
+
+      // Retrieves a single bean based on record ID
+      public function get_entry($module,$id,$fields=array(),$link=array(),$track=FALSE) {
+          $args = array(
+              'session' => $this->session,
+              'module_name' => $module,
+              'id' => $id,
+              'select_fields' => $fields,
+              'link_name_to_fields_array' => $link,
+              'track_view' => $track
+          );
+
+          // do the request
+          if($this->debug) print_r($args);
+          $result = $this->request('get_entry',$args);
+
+          // return the results
+          if($this->debug) print_r($result);
+          return $result;
+      }
+
+      // Retrieves a list of beans based on search specifications
+      // options['offset'] The record offset from which to start
+      // options['max_results'] The maximum number of results to return
+      // options['id'] Filters records by the assigned user ID
+      // options['unified_search_only'] If the search is only search modules participating in the unified search
+      // options['favorites'] If only records marked as favorites should be returned
+      public function search_by_module($searchstring,$modules,$fields=array(),$options=array()) {
+             $tmp =  array(
+                  'offset' => 0,
+                  'max_results' => 0,
+                  'id' => '',
+                  'unified_search_only' => FALSE,
+                  'favorites' => FALSE,
+              );
+
+          // set some defaults and merge in any option arguments
+          $options = array_merge(
+              array(
+                  'offset' => 0,
+                  'max_results' => 0,
+                  'id' => '',
+                  'unified_search_only' => FALSE,
+                  'favorites' => FALSE,
+              ),
+              $options
+          );
+
+
+          // set the request arguments
+          $args = array(
+              'session' => $this->session,
+              'search_string' => $searchstring,
+              'modules' => $modules,
+              'offset' => $options['offset'],
+              'max_results' => $options['max_results'],
+              'id' => $options['id'],
+              'select_fields' => $fields,
+              'unified_search_only' => $options['unified_search_only'],
+              'favorites' => $options['favorites'],
+          );
+
+          // do the request
+          if($this->debug) print_r($args);
+          $result = $this->request('search_by_module',$args);
 
           // return the results
           if($this->debug) print_r($result);
