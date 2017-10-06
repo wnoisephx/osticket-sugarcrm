@@ -1,0 +1,13 @@
+osTicket-SugarCRM - .02a - 2017-10-06
+------------------------------------
+Now will search both SugarCRM Contacts and Accounts, during ticket creation.
+Will use info from sugar to create a local osTicket user
+TODO : Accounts should created as osTicket orgs
+       Allow searching sugar modules based on osTicket Configs
+       Allow posting of osTicket tickets back to sugar (cases?)
+       Allow posting of osTicket notes back to sugar
+       Allow creation of osTicket users/orgs posting back as contacts/accounts in sugar
+
+osTicket-SugarCRM - .01a - 2017-09-06
+------------------------------------
+Should install and enable with no errors, will not quary sugarcrm 
