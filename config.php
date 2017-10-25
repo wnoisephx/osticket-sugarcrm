@@ -27,6 +27,24 @@ class SugarCRMPluginConfig extends PluginConfig {
                 'label' => 'confirm',
                 'configuration' => array('size'=>20),
             )),
+            'search' => new SectionBreakField(array(
+                'label' => 'Search Modules',
+                'hint' => 'Modules to Search',
+            )),
+            'search-contacts' => new BooleanField(array(
+                'label' => 'Search Contacts',
+                'default' => true,
+                'configuration' => array(
+                    'desc' => 'SugarCRM Contacts will be searched when creating users',
+                ),
+            )),
+            'search-accounts' => new BooleanField(array(
+                'label' => 'Search Accounts',
+                'default' => false,
+                'configuration' => array(
+                    'desc' => 'SugarCRM Accounts will be searched when creating users',
+                ),
+            )),
             'sync' => new SectionBreakField(array(
                 'label' => 'Synchronization Modes',
                 'hint' => 'Synchronization modes for Accounts and Contacts can be enabled independently',
@@ -38,7 +56,7 @@ class SugarCRMPluginConfig extends PluginConfig {
                     'desc' => 'Enable creation of new Users into SugarCRM Contacts',
                 ),
             )),
-            'auth-accounts' => new BooleanField(array(
+            'sync-accounts' => new BooleanField(array(
                 'label' => 'Syncronize Accounts',
                 'default' => true,
                 'configuration' => array(

@@ -1,3 +1,11 @@
+osTicket-SugarCRM - .02b - 2017-10-11
+------------------------------------
+You can now select which sugar modules you want to search, when looking for users
+your choices are either Contacts, Accounts or both
+
+Contacts/Accounts with out an email addresses will have a default email added to osticket, so that they
+will show up in the search results
+
 osTicket-SugarCRM - .02a - 2017-10-06
 ------------------------------------
 Now will search both SugarCRM Contacts and Accounts, during ticket creation.

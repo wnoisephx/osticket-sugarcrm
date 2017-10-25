@@ -7,7 +7,7 @@ require_once (INCLUDE_DIR . 'class.dynamic_forms.php');
 require_once (INCLUDE_DIR . 'class.osticket.php');
 
 class SugarCRMBackend {
-    static $__config;
+    var $config;
     private $CRMapi;
 
 function LogToFile($Message) {
@@ -16,26 +16,37 @@ function LogToFile($Message) {
 }
 
     function __construct($config) {
-        $this->__config = $config;
+        $this->config = $config;
         $this->setConfig($config);
         $this->CRMapi->Login();
     }
 
     function setConfig($config) {
-        $this->__config = $config;
         $this->CRMapi = new SugarRestAPI;
         $cfg = $config->getInfo();
         $this->CRMapi->SetLoginInfo($cfg['url'],$cfg['username'],$cfg['password'],'osticket');
     }
 
     function getConfig() {
-        return $__config;
+        return($this->config);
     }
 
     // function to search sugar modules
     function searchSugar($query) {
-// we should have a check box in the config for if we want to search Contacts, Accounts, or Both (or maybe other sugar modules?)
-       return($this->CRMapi->search_by_module($query,array('Contacts','Accounts'),array('id')));
+        $modules = array();
+        $config = $this->getConfig();
+        $cfg = $config->getInfo();
+
+        // search Contacts module
+        if($cfg['search-contacts'])
+            $modules[] = 'Contacts';
+ 
+        // search Accounts module
+	if($cfg['search-accounts'])
+            $modules[] = 'Accounts';
+
+        // do the search
+        return($this->CRMapi->search_by_module($query,$modules,array('id')));
     }
 
     // get a record by id
@@ -81,30 +92,43 @@ function LogToFile($Message) {
         $split=explode(':',$id);
         if($split[0]=="Contact") {
 	        $user=$this->sugarcrm->getRecord('Contacts',$split[1],$contact_fields);
+
+                // if email field is blank set it to something
+                if(!$user->entry_list[0]->name_value_list->email1->value) 
+                     $email = "blank@fix-me-in-sugar.com";
+                else
+                     $email = $user->entry_list[0]->name_value_list->email1->value;
+
                 $r=array(
                     'name'=>$user->entry_list[0]->name_value_list->name->value,
                     'first'=>$user->entry_list[0]->name_value_list->first_name->value,
                     'last'=>$user->entry_list[0]->name_value_list->last_name->value,
-                    'email'=>$user->entry_list[0]->name_value_list->email1->value,
+                    'email'=>$email,
                     'phone'=>$user->entry_list[0]->name_value_list->phone_work->value,
                     'mobile'=>$user->entry_list[0]->name_value_list->phone_mobile->value,
                     'id'=>static::$id.':Contact:'.$id,
                 );
         } else if($split[0]=="Account") {
+                // if email field is blank set it to something
+                if(!$user->entry_list[0]->name_value_list->email1->value) 
+                     $email = "blank@fix-me-in-sugar.com";
+                else
+                     $email = $user->entry_list[0]->name_value_list->email1->value;
+
 // accounts should be created as osTicket Organizations not users however this will work for now
 	        $user=$this->sugarcrm->getRecord('Accounts',$split[1],$account_fields);
                 $r=array(
                     'name'=>$user->entry_list[0]->name_value_list->name->value,
                     'first'=>$user->entry_list[0]->name_value_list->name->value,
                     'last'=>'',
-                    'email'=>$user->entry_list[0]->name_value_list->email1->value,
+                    'email'=>$email,
                     'phone'=>$user->entry_list[0]->name_value_list->phone_office->value,
                     'mobile'=>$user->entry_list[0]->name_value_list->phone_alternate->value,
                     'id'=>static::$id.':Account:'.$id,
                 );
         } else return;
 
-$this->LogToFile("r = ".print_r($r,TRUE)."\n");
+$this->LogToFile("lookup : r = ".print_r($r,TRUE)."\n");
         return($r);
     }
 
@@ -138,12 +162,18 @@ $this->LogToFile("r = ".print_r($r,TRUE)."\n");
                 if($ent->name=="Contacts") {
 	            $info=$this->sugarcrm->getRecord('Contacts',$user->id->value,$contact_fields);
 
+                    // if email field is blank set it to something
+                    if(!$info->entry_list[0]->name_value_list->email1->value) 
+                        $email = "blank@fix-me-in-sugar.com";
+                    else
+                        $email = $info->entry_list[0]->name_value_list->email1->value;
+
                     // build an array of user objects
                     $r[$idx++]=array(
                         'name'=>$info->entry_list[0]->name_value_list->name->value,
                         'first'=>$info->entry_list[0]->name_value_list->first_name->value,
                         'last'=>$info->entry_list[0]->name_value_list->last_name->value,
-                        'email'=>$info->entry_list[0]->name_value_list->email1->value,
+                        'email'=>$email,
                         'phone'=>$info->entry_list[0]->name_value_list->phone_work->value,
                         'mobile'=>$info->entry_list[0]->name_value_list->phone_mobile->value,
                         'id'=>static::$id.':Contact:'.$user->id->value,
@@ -151,12 +181,18 @@ $this->LogToFile("r = ".print_r($r,TRUE)."\n");
                 } else if($ent->name=="Accounts") {
 	            $info=$this->sugarcrm->getRecord('Accounts',$user->id->value,$account_fields);
 
+                    // if email field is blank set it to something
+                    if(!$info->entry_list[0]->name_value_list->email1->value) 
+                        $email = "blank@fix-me-in-sugar.com";
+                    else
+                        $email = $info->entry_list[0]->name_value_list->email1->value;
+
                     // build an array of user objects
                     $r[$idx++]=array(
                         'name'=>$info->entry_list[0]->name_value_list->name->value,
                         'first'=>$info->entry_list[0]->name_value_list->name->value,
-                        'last'=>'',
-                        'email'=>$info->entry_list[0]->name_value_list->email1->value,
+                        'last'=>'(Account)',
+                        'email'=>$email,
                         'phone'=>$info->entry_list[0]->name_value_list->phone_office->value,
                         'mobile'=>$info->entry_list[0]->name_value_list->phone_alternate->value,
                         'id'=>static::$id.':Account:'.$user->id->value,
@@ -164,7 +200,7 @@ $this->LogToFile("r = ".print_r($r,TRUE)."\n");
                 }
             }
         }  
-
+$this->LogToFile("serch : r = ".print_r($r,TRUE)."\n");
         // return the results
         return($r);
     }

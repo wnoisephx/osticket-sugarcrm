@@ -299,7 +299,7 @@ class SugarRestAPI
       public function search_by_module($searchstring,$modules,$fields=array(),$options=array()) {
              $tmp =  array(
                   'offset' => 0,
-                  'max_results' => 0,
+                  'max_results' => 100,
                   'id' => '',
                   'unified_search_only' => FALSE,
                   'favorites' => FALSE,
