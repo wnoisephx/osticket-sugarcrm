@@ -95,7 +95,7 @@ function LogToFile($Message) {
 
                 // if email field is blank set it to something
                 if(!$user->entry_list[0]->name_value_list->email1->value) 
-                     $email = "blank@fix-me-in-sugar.com";
+                     $email = strtolower(preg_replace('/\s/', '', $user->entry_list[0]->name_value_list->name->value)) . "@fixmeinsugar.domsys.com";
                 else
                      $email = $user->entry_list[0]->name_value_list->email1->value;
 
@@ -106,17 +106,19 @@ function LogToFile($Message) {
                     'email'=>$email,
                     'phone'=>$user->entry_list[0]->name_value_list->phone_work->value,
                     'mobile'=>$user->entry_list[0]->name_value_list->phone_mobile->value,
-                    'id'=>static::$id.':Contact:'.$id,
+                    'id'=>static::$id.':'.$id,
+                    'backend_id'=>static::$id.':'.$id,
+                    'notes'=>'Remote Sugar Contact',
                 );
         } else if($split[0]=="Account") {
+	        $user=$this->sugarcrm->getRecord('Accounts',$split[1],$account_fields);
                 // if email field is blank set it to something
                 if(!$user->entry_list[0]->name_value_list->email1->value) 
-                     $email = "blank@fix-me-in-sugar.com";
+                     $email = strtolower(preg_replace('/\s/', '', $user->entry_list[0]->name_value_list->name->value)) . "@fixmeinsugar.domsys.com";
                 else
                      $email = $user->entry_list[0]->name_value_list->email1->value;
 
 // accounts should be created as osTicket Organizations not users however this will work for now
-	        $user=$this->sugarcrm->getRecord('Accounts',$split[1],$account_fields);
                 $r=array(
                     'name'=>$user->entry_list[0]->name_value_list->name->value,
                     'first'=>$user->entry_list[0]->name_value_list->name->value,
@@ -125,6 +127,8 @@ function LogToFile($Message) {
                     'phone'=>$user->entry_list[0]->name_value_list->phone_office->value,
                     'mobile'=>$user->entry_list[0]->name_value_list->phone_alternate->value,
                     'id'=>static::$id.':Account:'.$id,
+                    'backend_id'=>static::$id.':Account:'.$id,
+                    'notes'=>'Remote Sugar Account',
                 );
         } else return;
 
@@ -134,6 +138,7 @@ $this->LogToFile("lookup : r = ".print_r($r,TRUE)."\n");
 
     // required function - search 
     function search($query) {
+
         $r=array();
 
         // these are the feilds to return from getRecord
@@ -164,7 +169,7 @@ $this->LogToFile("lookup : r = ".print_r($r,TRUE)."\n");
 
                     // if email field is blank set it to something
                     if(!$info->entry_list[0]->name_value_list->email1->value) 
-                        $email = "blank@fix-me-in-sugar.com";
+                        $email = strtolower(preg_replace('/\s/', '', $info->entry_list[0]->name_value_list->name->value)) . "@fixmeinsugar.domsys.com";
                     else
                         $email = $info->entry_list[0]->name_value_list->email1->value;
 
@@ -177,13 +182,14 @@ $this->LogToFile("lookup : r = ".print_r($r,TRUE)."\n");
                         'phone'=>$info->entry_list[0]->name_value_list->phone_work->value,
                         'mobile'=>$info->entry_list[0]->name_value_list->phone_mobile->value,
                         'id'=>static::$id.':Contact:'.$user->id->value,
+                        'backend_id'=>static::$id.':Contact:'.$user->id->value,
                     );
                 } else if($ent->name=="Accounts") {
 	            $info=$this->sugarcrm->getRecord('Accounts',$user->id->value,$account_fields);
 
                     // if email field is blank set it to something
                     if(!$info->entry_list[0]->name_value_list->email1->value) 
-                        $email = "blank@fix-me-in-sugar.com";
+                        $email = strtolower(preg_replace('/\s/', '', $info->entry_list[0]->name_value_list->name->value)) . "@fixmeinsugar.domsys.com";
                     else
                         $email = $info->entry_list[0]->name_value_list->email1->value;
 
@@ -191,16 +197,17 @@ $this->LogToFile("lookup : r = ".print_r($r,TRUE)."\n");
                     $r[$idx++]=array(
                         'name'=>$info->entry_list[0]->name_value_list->name->value,
                         'first'=>$info->entry_list[0]->name_value_list->name->value,
-                        'last'=>'(Account)',
+                        'last'=>'',
                         'email'=>$email,
                         'phone'=>$info->entry_list[0]->name_value_list->phone_office->value,
                         'mobile'=>$info->entry_list[0]->name_value_list->phone_alternate->value,
                         'id'=>static::$id.':Account:'.$user->id->value,
+                        'backend_id'=>static::$id.':Account:'.$user->id->value,
                     );
                 }
             }
         }  
-$this->LogToFile("serch : r = ".print_r($r,TRUE)."\n");
+$this->LogToFile("search : r = ".print_r($r,TRUE)."\n");
         // return the results
         return($r);
     }

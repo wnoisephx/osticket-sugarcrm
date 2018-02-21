@@ -297,19 +297,12 @@ class SugarRestAPI
       // options['unified_search_only'] If the search is only search modules participating in the unified search
       // options['favorites'] If only records marked as favorites should be returned
       public function search_by_module($searchstring,$modules,$fields=array(),$options=array()) {
-             $tmp =  array(
-                  'offset' => 0,
-                  'max_results' => 100,
-                  'id' => '',
-                  'unified_search_only' => FALSE,
-                  'favorites' => FALSE,
-              );
-
+          
           // set some defaults and merge in any option arguments
           $options = array_merge(
               array(
                   'offset' => 0,
-                  'max_results' => 0,
+                  'max_results' => 100,
                   'id' => '',
                   'unified_search_only' => FALSE,
                   'favorites' => FALSE,

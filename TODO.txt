@@ -4,3 +4,5 @@ Allow searching sugar modules based on osTicket Configs - DONE
 Allow posting of osTicket tickets back to sugar (cases?)
 Allow posting of osTicket notes back to sugar
 Allow creation of osTicket users/orgs posting back as contacts/accounts in sugar
+
+Deleting a user does not delete the users cdata
